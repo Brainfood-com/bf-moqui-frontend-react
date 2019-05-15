@@ -1,5 +1,5 @@
 {
-  "name": "bf-moqui-frontend",
+  "name": "bf-moqui-frontend-react",
   "version": "0.1.0",
   "description": "",
   "main": "src/index.js",
@@ -11,5 +11,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {},
-  "devDependencies": {}
+  "devDependencies": {
+    "cancelable-promise": "^2.4.1",
+    "react": "^16.8.6"
+  }
 }
