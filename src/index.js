@@ -1,3 +1,4 @@
+import isEqual from 'lodash/isEqual'
 import React from 'react'
 import CancelablePromise from 'cancelable-promise'
 
@@ -25,9 +26,8 @@ export function moquiApi(path, options = {}) {
       })
     }).then(resolve, reject)
   }).then(response => {
-      moquiSessionToken = response.headers.get('moquiSessionToken')
-      return response.json()
-    })
+    moquiSessionToken = response.headers.get('moquiSessionToken')
+    return response.json()
   })
 }
 
@@ -35,64 +35,29 @@ export function withModelApi(options = {}) {
   const {extractKey, fetchModel, processModel} = options
 
   return Component => {
-    return class ModelApiWrapper extends React.Component {
-      state = {
-        isLoading: true,
-      }
+    return function ModelApiWrapper(props) {
+      const [key, setKey] = React.useState(undefined)
+      const [model, setModel] = React.useState(null)
+      const [isLoading, setIsLoading] = React.useState(true)
+      const [pipeline, setPipeline] = React.useState(null)
 
-      static getDerivedStateFromProps(props, state) {
-        const key = extractKey(props)
-        if (isEqual(key, state.key)) {
-          return {}
+      const newKey = extractKey(props)
+      if (!isEqual(key, newKey)) {
+        setKey(newKey)
+        if (pipeline) {
+          pipeline.cancel()
         }
-        return {key, model: undefined}
-      }
-
-      componentDidMount() {
-        this.loadModel()
-      }
-
-      componentWillUnmount() {
-        if (this._pipeline) {
-          this._pipeline.cancel()
-        }
-      }
-
-      loadModel() {
-        this.setState((state, props) => {
-          if ((state.isLoading && this._pipeline) || state.model !== undefined) {
-            return
+        if (newKey !== undefined) {
+          if (!isLoading) {
+            setIsLoading(true)
           }
-          const {key} = state
-          const clearPipeline = () => delete this._pipeline
-          this._pipeline = fetchModel(key).then(processModel).then(model => {
-            this.setState((state, props) => {
-              if (key === state.key) {
-                return {isLoading: false, model}
-              }
-            })
-          }).then(clearPipeline, clearPipeline)
-          return {isLoading: true}
-        })
-      }
-
-      componentDidUpdate() {
-        if (state.model === undefined) {
-          this.loadModel()
+          setPipeline(fetchModel(newKey).then(processModel).then(setModel).then(() => setIsLoading(false), () => setIsLoading(false)))
+        } else {
+          setPipeline(null)
         }
       }
 
-      refreshModel = () => {
-        this.setState((state, props) => {
-          this.loadModel()
-          return {model: undefined}
-        })
-      }
-
-      render() {
-        const {key, model, isLoading} = this.state
-        return <Component {...this.props} {...model} isLoading={isLoading}/>
-      }
+      return <Component {...props} {...model} isLoading={isLoading}/>
     }
   }
 }

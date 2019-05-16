@@ -13,6 +13,7 @@
   "dependencies": {},
   "devDependencies": {
     "cancelable-promise": "^2.4.1",
+    "lodash": "^4.17.11",
     "react": "^16.8.6"
   }
 }
