@@ -1,6 +1,7 @@
 import isEqual from 'lodash/isEqual'
 import React from 'react'
 import CancelablePromise from 'cancelable-promise'
+import Auth from 'bf-auth-frontend-react'
 
 export const [moquiBase, setMoquiBase] = (() => {
   let moquiBaseResolve
@@ -13,18 +14,19 @@ export const [moquiBase, setMoquiBase] = (() => {
 let moquiSessionToken = undefined
 export function moquiApi(path, options = {}) {
   return new CancelablePromise((resolve, reject) => {
-    moquiBase.then(moquiBase => {
+    moquiBase.then(moquiBase => Auth.getProviderToken('moqui').then(authorization => {
       const {headers = {}} = options
       return fetch(moquiBase + path, {
         ...options,
         headers: {
           ...headers,
+          authorization,
           moquiSessionToken,
         },
         mode: 'cors',
         credentials: 'include',
       })
-    }).then(resolve, reject)
+    })).then(resolve, reject)
   }).then(response => {
     moquiSessionToken = response.headers.get('moquiSessionToken')
     return response.json()
