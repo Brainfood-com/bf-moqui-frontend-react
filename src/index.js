@@ -11,26 +11,38 @@ export const [moquiBase, setMoquiBase] = (() => {
   return [moquiBasePromise, moquiBaseResolve]
 })()
 
-let moquiSessionToken = undefined
 export function moquiApi(path, options = {}) {
+  let currentMoquiToken
+  function applyMoquiToken([moquiBase, moquiToken]) {
+    if (moquiToken === currentMoquiToken) {
+      return moquiBase
+    }
+    console.log('moquiToken', moquiToken)
+    return fetch(moquiBase + '/bf-auth/connect', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify({
+        authorization: moquiToken,
+      }),
+      mode: 'cors',
+      credentials: 'include',
+    }).then(response => moquiBase)
+  }
   return new CancelablePromise((resolve, reject) => {
-    moquiBase.then(moquiBase => Auth.getProviderToken('moqui').then(authorization => {
+    Promise.all([moquiBase, Auth.getToken('moqui')]).then(applyMoquiToken).then(moquiBase => {
       const {headers = {}} = options
       return fetch(moquiBase + path, {
         ...options,
         headers: {
           ...headers,
-          authorization,
-          moquiSessionToken,
         },
         mode: 'cors',
         credentials: 'include',
       })
-    })).then(resolve, reject)
-  }).then(response => {
-    moquiSessionToken = response.headers.get('moquiSessionToken')
-    return response.json()
-  })
+    }).then(resolve, reject)
+  }).then(response => response.json())
 }
 
 export function withModelApi(options = {}) {
