@@ -1,6 +1,6 @@
 {
   "name": "bf-moqui-frontend-react",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "",
   "main": "src/index.js",
   "scripts": {
@@ -11,7 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "bf-auth-frontend-react": "github:Brainfood-com/bf-auth-frontend-react#0.2.0",
+    "bf-auth-frontend-react": "github:Brainfood-com/bf-auth-frontend-react#semver:^0",
     "cancelable-promise": "^2.4.1",
     "lodash": "^4.17.11",
     "react": "^16.8.6"
