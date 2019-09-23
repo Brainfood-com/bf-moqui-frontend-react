@@ -1,8 +1,8 @@
 {
   "name": "bf-moqui-frontend-react",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "",
-  "main": "src/index.js",
+  "main": "dist/index.js",
   "scripts": {
     "start": "webpack-dev-server --hot --progress --colors",
     "test": "echo \"Error: no test specified\" && exit 1",
