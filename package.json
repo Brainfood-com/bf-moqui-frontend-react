@@ -14,7 +14,7 @@
   "dependencies": {
     "bf-auth-frontend-react": "github:Brainfood-com/bf-auth-frontend-react#semver:^0",
     "cancelable-promise": "^2.4.1",
-    "lodash": "^4.17.11",
+    "lodash": "^4.17.13",
     "react": "^16.8.6"
   },
   "devDependencies": {
